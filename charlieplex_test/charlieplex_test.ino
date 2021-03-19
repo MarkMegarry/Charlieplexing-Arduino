@@ -8,7 +8,7 @@
 
 //Each entry defines an int to be passed to setOutputs()
 //Leftmost 4 bits determine pin modes, rightmost 4 bits determine digitalWrite states
-//Roughly according to 4-pin schematic at http://www.multiwingspan.co.uk/arduino.php?page=vbcharlie , some pair numbers might be swapped.
+//Roughly according to pin 4 schematic at http://www.multiwingspan.co.uk/arduino.php?page=vbcharlie , some pair numbers might be swapped.
 uint8_t LED_patterns[12] =  { 0b00110001,
                               0b00110010,
                               0b01100010,
@@ -27,9 +27,9 @@ void setup() {
 }
 
 void loop() {
-  for(int x = 0; x < 12; x++){
-    setOutputs(LED_patterns[x]);
-    delay(commonDelay);
+  for(int x = 0; x < 12; x++){      //For each LED
+    setOutputs(LED_patterns[x]);    //pass that LED's address to setOutputs
+    delay(commonDelay);             //Delay for a pre-defined period of time
   }
 }
 
@@ -41,20 +41,24 @@ void loop() {
  * Rightmost 4 bits determine digitalWrite high or low, 0 = low, 1 = high. LED_address bit 0 is line1 and bit 3 is line4 
  ***********************************************************************************************************************/
 void setOutputs(uint8_t LED_address){ 
-  int pinArray[4] = {line1, line2, line3, line4};
+  int pinArray[4] = {line1, line2, line3, line4};   //Define the array of pins
 
   //Set pin states and write outputs
   for(int x = 0; x < 4; x++){
-    if(customReadBit(LED_address, x + 4)){   //If the corresponding bit of LED_address is high
-      pinMode(pinArray[x], OUTPUT);   //Set the pin mode according to the modeBits
+    if(customReadBit(LED_address, x + 4)){          //If the corresponding bit of LED_address is high
+      pinMode(pinArray[x], OUTPUT);                 //Set the pin mode according to the modeBits
     }
-    else{                             //If corresponding bit of LED_address is low
+    else{                                           //If corresponding bit of LED_address is low
       pinMode(pinArray[x], INPUT);
     }
     digitalWrite(pinArray[x], customReadBit(LED_address, x));  //Set output according to LED_address
   }
 }
 
+/**********************************************************************************************************************
+ * Reads bit bitpos of input where an input of 0 is the LSB
+ * We use this instead of bitRead() as the ATTiny board library I intend to use may not support bitRead()
+ ***********************************************************************************************************************/
 int customReadBit(int input, int bitPos){ //Reads bit bitpos of input where 0 is LSB
-  return (input >> bitPos) & 1;
+  return (input >> bitPos) & 1;   //bitshift the input [bitpos] positions to the right and mask all but the LSB
 }

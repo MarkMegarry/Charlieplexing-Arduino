@@ -52,9 +52,6 @@ void setOutputs(uint8_t LED_address){
     if(customReadBit(LED_address, x + 4)){          //If the corresponding bit of LED_address is high
       pinMode((int)pinArray[x], OUTPUT);                 //Set the pin mode according to the modeBits
     }
-    else{                                           //If corresponding bit of LED_address is low
-      pinMode((int)pinArray[x], INPUT);
-    }
     digitalWrite((int)pinArray[x], customReadBit(LED_address, x));  //Set output according to LED_address
   }
 }
